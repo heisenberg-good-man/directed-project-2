@@ -8,7 +8,7 @@ import { formatDateTime, formatMoney } from '@/utils/storage';
 const statCards = [
   {
     key: FreightStatus.PENDING,
-    label: '待调度',
+    label: STATUS_LABEL[FreightStatus.PENDING],
     icon: Clock,
     color: 'from-orange-500 to-amber-500',
     bg: 'bg-orange-50',
@@ -16,7 +16,7 @@ const statCards = [
   },
   {
     key: FreightStatus.DISPATCHED,
-    label: '已调度',
+    label: STATUS_LABEL[FreightStatus.DISPATCHED],
     icon: Truck,
     color: 'from-blue-500 to-indigo-500',
     bg: 'bg-blue-50',
@@ -24,7 +24,7 @@ const statCards = [
   },
   {
     key: FreightStatus.IN_TRANSIT,
-    label: '运输中',
+    label: STATUS_LABEL[FreightStatus.IN_TRANSIT],
     icon: Route,
     color: 'from-purple-500 to-fuchsia-500',
     bg: 'bg-purple-50',
@@ -32,7 +32,7 @@ const statCards = [
   },
   {
     key: FreightStatus.DELIVERED,
-    label: '已送达',
+    label: STATUS_LABEL[FreightStatus.DELIVERED],
     icon: CheckCircle,
     color: 'from-emerald-500 to-green-500',
     bg: 'bg-green-50',

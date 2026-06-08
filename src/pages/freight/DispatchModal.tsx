@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Modal from '@/components/Modal';
 import { useFreightStore } from '@/store/useFreightStore';
+import { useToastStore } from '@/store/useToastStore';
 import { Truck, User, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -20,6 +21,9 @@ export default function DispatchModal({ orderId, onClose }: DispatchModalProps) 
   const drivers = useFreightStore(s => s.drivers);
   const dispatchOrder = useFreightStore(s => s.dispatchOrder);
   const getOrderById = useFreightStore(s => s.getOrderById);
+  const getVehicleById = useFreightStore(s => s.getVehicleById);
+  const getDriverById = useFreightStore(s => s.getDriverById);
+  const showToast = useToastStore(s => s.showToast);
 
   useEffect(() => {
     if (open) {
@@ -45,6 +49,9 @@ export default function DispatchModal({ orderId, onClose }: DispatchModalProps) 
     try {
       if (orderId) {
         dispatchOrder(orderId, vehicleId, driverId);
+        const v = getVehicleById(vehicleId);
+        const d = getDriverById(driverId);
+        showToast('success', `调度成功：已分配车辆 ${v?.plateNumber || ''}、司机 ${d?.name || ''}`);
       }
       onClose();
     } finally {

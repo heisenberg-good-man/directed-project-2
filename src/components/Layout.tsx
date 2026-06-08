@@ -3,6 +3,7 @@ import { Home, Truck, LayoutDashboard, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEffect } from 'react';
 import { useFreightStore } from '@/store/useFreightStore';
+import ToastContainer from '@/components/ToastContainer';
 
 const navItems = [
   { to: '/', label: '首页', icon: Home },
@@ -77,6 +78,7 @@ export default function Layout() {
           <Outlet />
         </main>
       </div>
+      <ToastContainer />
     </div>
   );
 }

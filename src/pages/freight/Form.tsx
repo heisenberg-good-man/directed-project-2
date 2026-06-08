@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save } from 'lucide-react';
 import { useFreightStore } from '@/store/useFreightStore';
+import { useToastStore } from '@/store/useToastStore';
 import { FreightFormData } from '@/types';
 import { cn } from '@/lib/utils';
 
@@ -35,6 +36,7 @@ export default function FreightForm() {
   const getOrderById = useFreightStore(s => s.getOrderById);
   const createOrder = useFreightStore(s => s.createOrder);
   const updateOrder = useFreightStore(s => s.updateOrder);
+  const showToast = useToastStore(s => s.showToast);
 
   const [form, setForm] = useState<FreightFormData>(defaultForm);
   const [errors, setErrors] = useState<Errors>({});
@@ -88,13 +90,18 @@ export default function FreightForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
+    if (!validate()) {
+      showToast('error', '请检查表单填写项，确保所有必填项已正确填写');
+      return;
+    }
     setSubmitting(true);
     try {
       if (isEdit && id) {
         updateOrder(id, form);
+        showToast('success', '运单信息已保存');
       } else {
-        createOrder(form);
+        const order = createOrder(form);
+        showToast('success', `运单 ${order.orderNo} 创建成功`);
       }
       navigate('/freight');
     } finally {

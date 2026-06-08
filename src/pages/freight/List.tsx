@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Plus, Eye, Pencil, UserCog, PlayCircle, CheckCircle2, Trash2 } from 'lucide-react';
 import { useFreightStore } from '@/store/useFreightStore';
+import { useToastStore } from '@/store/useToastStore';
 import { FreightStatus, STATUS_ACTION_LABEL, STATUS_FLOW, STATUS_LABEL } from '@/types';
 import StatusTag from '@/components/StatusTag';
+import ConfirmModal from '@/components/ConfirmModal';
 import { formatDateTime, formatMoney } from '@/utils/storage';
 import DetailModal from './DetailModal';
 import DispatchModal from './DispatchModal';
@@ -14,23 +16,40 @@ export default function FreightList() {
   const [statusFilter, setStatusFilter] = useState<FreightStatus | ''>('');
   const [detailOrderId, setDetailOrderId] = useState<string | null>(null);
   const [dispatchOrderId, setDispatchOrderId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const searchOrders = useFreightStore(s => s.searchOrders);
   const getVehicleById = useFreightStore(s => s.getVehicleById);
   const getDriverById = useFreightStore(s => s.getDriverById);
   const advanceStatus = useFreightStore(s => s.advanceStatus);
   const deleteOrder = useFreightStore(s => s.deleteOrder);
+  const getOrderById = useFreightStore(s => s.getOrderById);
+  const showToast = useToastStore(s => s.showToast);
 
   const orders = searchOrders(keyword, statusFilter);
 
   const handleAdvance = (id: string) => {
+    const order = getOrderById(id);
+    if (!order) return;
+    const nextStatus = STATUS_FLOW[order.status];
+    if (!nextStatus) {
+      showToast('warning', '该运单已完成，无法继续推进状态');
+      return;
+    }
     advanceStatus(id);
+    showToast('success', `运单状态已更新为「${STATUS_LABEL[nextStatus]}」`);
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('确定要删除该运单吗？此操作不可恢复。')) {
-      deleteOrder(id);
+    setDeleteTarget(id);
+  };
+
+  const confirmDelete = () => {
+    if (deleteTarget) {
+      deleteOrder(deleteTarget);
+      showToast('success', '运单已删除');
     }
+    setDeleteTarget(null);
   };
 
   return (
@@ -207,6 +226,15 @@ export default function FreightList() {
 
       <DetailModal orderId={detailOrderId} onClose={() => setDetailOrderId(null)} />
       <DispatchModal orderId={dispatchOrderId} onClose={() => setDispatchOrderId(null)} />
+      <ConfirmModal
+        open={!!deleteTarget}
+        title="删除运单"
+        message="确定要删除该运单吗？此操作不可恢复。"
+        confirmText="删除"
+        danger
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

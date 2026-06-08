@@ -26,6 +26,13 @@ export const STATUS_ACTION_LABEL: Record<FreightStatus, string> = {
   [FreightStatus.DELIVERED]: '已完成'
 };
 
+export const ALL_STATUSES: FreightStatus[] = [
+  FreightStatus.PENDING,
+  FreightStatus.DISPATCHED,
+  FreightStatus.IN_TRANSIT,
+  FreightStatus.DELIVERED
+];
+
 export interface StatusLog {
   id: string;
   status: FreightStatus;

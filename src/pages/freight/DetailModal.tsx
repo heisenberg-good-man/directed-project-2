@@ -2,6 +2,7 @@ import Modal from '@/components/Modal';
 import StatusTag from '@/components/StatusTag';
 import { useFreightStore } from '@/store/useFreightStore';
 import {
+  ALL_STATUSES,
   FreightStatus,
   STATUS_LABEL
 } from '@/types';
@@ -13,13 +14,6 @@ interface DetailModalProps {
   onClose: () => void;
 }
 
-const allStatuses: FreightStatus[] = [
-  FreightStatus.PENDING,
-  FreightStatus.DISPATCHED,
-  FreightStatus.IN_TRANSIT,
-  FreightStatus.DELIVERED
-];
-
 export default function DetailModal({ orderId, onClose }: DetailModalProps) {
   const open = !!orderId;
   const getOrderById = useFreightStore(s => s.getOrderById);
@@ -30,7 +24,7 @@ export default function DetailModal({ orderId, onClose }: DetailModalProps) {
   const vehicle = order ? getVehicleById(order.vehicleId) : undefined;
   const driver = order ? getDriverById(order.driverId) : undefined;
 
-  const getStatusIndex = (s: FreightStatus) => allStatuses.indexOf(s);
+  const getStatusIndex = (s: FreightStatus) => ALL_STATUSES.indexOf(s);
   const currentIndex = order ? getStatusIndex(order.status) : -1;
 
   return (
@@ -183,7 +177,7 @@ export default function DetailModal({ orderId, onClose }: DetailModalProps) {
             <div className="relative">
               <div className="absolute left-5 top-5 bottom-5 w-0.5 bg-slate-200" />
               <div className="space-y-4">
-                {allStatuses.map((s, idx) => {
+                {ALL_STATUSES.map((s, idx) => {
                   const log = order.statusLogs.find(l => l.status === s);
                   const done = idx <= currentIndex;
                   const current = idx === currentIndex;
